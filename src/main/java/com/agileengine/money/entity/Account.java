@@ -15,7 +15,7 @@ public class Account {
 
     private String name;
 
-    private Float amount;
+    private Float moneyAmount;
 
     public Long getId() {
         return id;
@@ -33,11 +33,16 @@ public class Account {
         this.name = name;
     }
 
-    public Float getAmount() {
-        return amount;
+    public Float getMoneyAmount() {
+        return moneyAmount;
     }
 
-    public void setAmount(Float amount) {
-        this.amount = amount;
+    public void setMoneyAmount(Float moneyAmount) {
+        this.moneyAmount = moneyAmount;
     }
+
+    public void addMoney(float amount) {
+        this.moneyAmount += amount;
+    }
+
 }

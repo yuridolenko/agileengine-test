@@ -13,7 +13,7 @@ public class MoneyTransaction {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "account_id")
     private Account account;
 
@@ -22,6 +22,14 @@ public class MoneyTransaction {
     private TransactionType type;
 
     private Float amount;
+
+    public MoneyTransaction() { }
+
+    public MoneyTransaction(Account account, TransactionType type, Float amount) {
+        this.account = account;
+        this.type = type;
+        this.amount = amount;
+    }
 
     public Long getId() {
         return id;
