@@ -15,7 +15,7 @@ import java.util.List;
  * Created by ded on 01.06.2017.
  */
 @RestController
-@RequestMapping("/transactions")
+@RequestMapping("/api/transactions")
 public class MoneyTransactionController {
 
     @Autowired

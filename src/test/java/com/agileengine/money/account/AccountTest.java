@@ -8,7 +8,10 @@ import com.agileengine.money.service.IAccountService;
 import com.agileengine.money.vo.AccountVO;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
@@ -18,6 +21,8 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Created by ded on 01.06.2017.
  */
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class AccountTest extends BaseTest{
 
     @Autowired
