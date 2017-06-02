@@ -15,7 +15,7 @@ public class Account {
 
     private String name;
 
-    private Float moneyAmount;
+    private float moneyAmount;
 
     public Long getId() {
         return id;

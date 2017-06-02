@@ -8,21 +8,52 @@ const client = require('./client');
 class App extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {moneyAmount: 0, accountId: 0};
+        this.state = {
+            moneyAmount: 0,
+            accountId: 0,
+            transactions: [],
+            error: {
+                code: '',
+                text: ''
+            }
+        };
+    }
+
+    componentDidMount() {
+        this.refreshTransactions();
     }
 
     render() {
         return (
             <div className="verticalContainer">
                 <div className="container">
-                    <AccountDropDownList onChange={this.onAccountChanged}/>
+                    <AccountDropDownList onChange={this.onAccountChanged.bind(this)}/>
                     <input type="number" onChange={this.onMoneyChanged.bind(this)}/>
                     <MoneyButton caption="Credit" onClick={this.onMoneyButtonClick.bind(this, 'CREDIT')}/>
                     <MoneyButton caption="Dedit" onClick={this.onMoneyButtonClick.bind(this, 'DEBIT')}/>
+                    <ErrorLabel error={this.state.error}/>
                 </div>
-                <TransactionsTable />
+                <div className="verticalContainer">
+                    <button type="button" onClick={this.refreshTransactions.bind(this)}
+                            className="refreshTransactionButton">Refresh
+                    </button>
+                    <TransactionsTable transactions={this.state.transactions}/>
+                </div>
             </div>
         )
+    }
+
+    refreshTransactions() {
+        let self = this;
+        client({method: 'GET', path: '/api/transactions'}).done(response => {
+            self.setState({
+                transactions: response.entity,
+                error: {
+                    code: '',
+                    text: ''
+                }
+            });
+        });
     }
 
     onAccountChanged(e) {
@@ -35,49 +66,42 @@ class App extends React.Component {
 
     onMoneyButtonClick(type) {
         let transaction = {accountId: this.state.accountId, type: type, amount: this.state.moneyAmount}
-        client({method: 'PUT', path: '/api/transactions', entity: transaction}).done(response => {
-            console.log(response)
+        client({
+            method: 'PUT',
+            path: '/api/transactions',
+            entity: transaction,
+            headers: {'Content-Type': 'application/json'}
+        }).done(response => {
+            this.refreshTransactions()
+        }, response => {
+            this.setState({
+                error: {
+                    code: response.status.code,
+                    text: response.entity.message
+                }
+            });
         });
     }
 }
 
 class TransactionsTable extends React.Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {transactions: []};
-    }
-
-    refresh() {
-        let self = this;
-        client({method: 'GET', path: '/api/transactions'}).done(response => {
-            self.setState({transactions: response.entity});
-        });
-    }
-
-    componentDidMount() {
-        this.refresh();
-    }
-
     render() {
-        var transactions = this.state.transactions.map(transaction =>
+        var transactions = this.props.transactions.map(transaction =>
             <Transaction key={transaction.id} transaction={transaction}/>
         );
         return (
-            <div className="verticalContainer">
-                <button type="button" onClick={this.refresh.bind(this)} className="refreshTransactionButton">Refresh</button>
-                <table>
-                    <tbody>
-                    <tr>
-                        <th>Id</th>
-                        <th>Account Name</th>
-                        <th>Type</th>
-                        <th>Amount</th>
-                    </tr>
-                    {transactions}
-                    </tbody>
-                </table>
-            </div>
+            <table className="transactionsTable">
+                <tbody>
+                <tr>
+                    <th>Id</th>
+                    <th>Account Name</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                </tr>
+                {transactions}
+                </tbody>
+            </table>
         )
     }
 }
@@ -114,6 +138,7 @@ class AccountDropDownList extends React.Component {
         );
         return (
             <select onChange={this.props.onChange}>
+                <option value="-1">Select Account...</option>
                 {accounts}
             </select>
         )
@@ -124,6 +149,16 @@ class Account extends React.Component {
     render() {
         return (
             <option value={this.props.account.id}>{this.props.account.name}</option>
+        )
+    }
+}
+
+class ErrorLabel extends React.Component {
+    render() {
+        return (
+            <div className="transactionError">
+                <b>{this.props.error.code}</b><span>{this.props.error.text}</span>
+            </div>
         )
     }
 }
