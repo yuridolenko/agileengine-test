@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -47,7 +48,7 @@ public class MoneyTransactionTest extends BaseTest {
         // Create test account
         Account account = new Account();
         account.setName(uuid());
-        account.setMoneyAmount(1000f);
+        account.setMoneyAmount(new BigDecimal(1000));
         accountRepository.save(account);
         accountId = account.getId();
     }
@@ -56,7 +57,7 @@ public class MoneyTransactionTest extends BaseTest {
     public void readTest() {
         Account account = accountRepository.findOne(accountId);
         for (int i = 0; i < 10; i++) {
-            MoneyTransaction transaction = new MoneyTransaction(account, TransactionType.CREDIT, 100f);
+            MoneyTransaction transaction = new MoneyTransaction(account, TransactionType.CREDIT, new BigDecimal(100f));
             moneyTransactionRepository.save(transaction);
         }
 
@@ -73,30 +74,30 @@ public class MoneyTransactionTest extends BaseTest {
 
     @Test(expected = NotEnoughMoneyException.class)
     public void notEnoughMoneyTest() throws AccountNotFoundException, NotEnoughMoneyException {
-        createTransaction(TransactionType.CREDIT, 2000);
+        createTransaction(TransactionType.CREDIT, new BigDecimal(2000));
     }
 
     @Test
     public void transactionTest() throws AccountNotFoundException, NotEnoughMoneyException {
-        createTransaction(TransactionType.CREDIT, 500);
+        createTransaction(TransactionType.CREDIT, new BigDecimal(500));
 
         Account account = accountRepository.findOne(accountId);
-        assertEquals(500f, account.getMoneyAmount(), 0);
+        assertEquals(500f, account.getMoneyAmount().floatValue(), 0);
 
-        createTransaction(TransactionType.DEBIT, 600);
+        createTransaction(TransactionType.DEBIT, new BigDecimal(600));
         account = accountRepository.findOne(accountId);
-        assertEquals(1100f, account.getMoneyAmount(), 0);
+        assertEquals(1100f, account.getMoneyAmount().floatValue(), 0);
 
         List<MoneyTransactionVO> transactions = moneyTransactionService.read();
         assertNotNull(transactions);
         assertEquals(2, transactions.size());
         assertTrue(transactions.stream()
-                .anyMatch(vo -> TransactionType.CREDIT.equals(vo.getType()) && vo.getAmount() == 500f));
+                .anyMatch(vo -> TransactionType.CREDIT.equals(vo.getType()) && new BigDecimal(500).compareTo(vo.getAmount()) == 0));
         assertTrue(transactions.stream()
-                .anyMatch(vo -> TransactionType.DEBIT.equals(vo.getType()) && vo.getAmount() == 600f));
+                .anyMatch(vo -> TransactionType.DEBIT.equals(vo.getType()) && new BigDecimal(600).compareTo(vo.getAmount()) == 0));
     }
 
-    private void createTransaction(TransactionType type, float amount) throws AccountNotFoundException, NotEnoughMoneyException {
+    private void createTransaction(TransactionType type, BigDecimal amount) throws AccountNotFoundException, NotEnoughMoneyException {
         MoneyTransactionVO vo = new MoneyTransactionVO();
         vo.setAccountId(accountId);
         vo.setType(type);

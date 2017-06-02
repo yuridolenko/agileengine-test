@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -45,7 +46,7 @@ public class AccountTest extends BaseTest{
         for (int i = 0; i < 10; i++) {
             Account account = new Account();
             account.setName(uuid());
-            account.setMoneyAmount(100f);
+            account.setMoneyAmount(new BigDecimal(100));
             accountRepository.save(account);
         }
 

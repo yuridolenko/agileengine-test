@@ -39,7 +39,7 @@ public class MoneyTransactionService implements IMoneyTransactionService{
         if (account == null) {
             throw new AccountNotFoundException();
         }
-        if (TransactionType.CREDIT.equals(vo.getType()) && vo.getAmount() > account.getMoneyAmount()) {
+        if (TransactionType.CREDIT.equals(vo.getType()) && vo.getAmount().compareTo(account.getMoneyAmount()) > 0) {
             throw new NotEnoughMoneyException();
         }
 

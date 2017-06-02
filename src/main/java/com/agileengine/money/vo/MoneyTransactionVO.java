@@ -4,6 +4,7 @@ import com.agileengine.money.entity.MoneyTransaction;
 import com.agileengine.money.entity.TransactionType;
 
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 
 /**
  * Created by ded on 01.06.2017.
@@ -20,7 +21,7 @@ public class MoneyTransactionVO implements IBaseVO {
     @NotNull
     private Long accountId;
 
-    private float amount;
+    private BigDecimal amount;
 
     public MoneyTransactionVO() {
     }
@@ -65,15 +66,15 @@ public class MoneyTransactionVO implements IBaseVO {
         this.accountId = accountId;
     }
 
-    public float getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(float amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
-    public float getSignedAmount() {
-        return TransactionType.CREDIT.equals(type) ? -amount : amount;
+    public BigDecimal getSignedAmount() {
+        return TransactionType.CREDIT.equals(type) ? amount.negate() : amount;
     }
 }

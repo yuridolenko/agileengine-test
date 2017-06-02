@@ -1,6 +1,7 @@
 package com.agileengine.money.entity;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 /**
  * Created by ded on 01.06.2017.
@@ -21,11 +22,11 @@ public class MoneyTransaction {
     @Enumerated(EnumType.STRING)
     private TransactionType type;
 
-    private Float amount;
+    private BigDecimal amount;
 
     public MoneyTransaction() { }
 
-    public MoneyTransaction(Account account, TransactionType type, Float amount) {
+    public MoneyTransaction(Account account, TransactionType type, BigDecimal amount) {
         this.account = account;
         this.type = type;
         this.amount = amount;
@@ -55,11 +56,11 @@ public class MoneyTransaction {
         this.type = type;
     }
 
-    public Float getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(Float amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 }
